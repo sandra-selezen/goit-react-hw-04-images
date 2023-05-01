@@ -3,11 +3,11 @@ import { useState } from "react";
 import { ImageModal } from "components/Modal/Modal"
 import { GalleryImage } from "./ImageGalleryItem.styled"
 
-export const ImageGalleryItem = ({ picture }) => {
+export const ImageGalleryItem = ({ picture: { webformatURL, largeImageURL } }) => {
   const [selectedImg, setSelectedImg] = useState(null);
 
   const onSelectedImg = () => {
-    setSelectedImg(picture.largeImageURL);
+    setSelectedImg(largeImageURL);
   }
 
   const closeModal = () => {
@@ -16,7 +16,7 @@ export const ImageGalleryItem = ({ picture }) => {
 
   return (
     <>
-      <GalleryImage src={picture.webformatURL} onClick={onSelectedImg} />
+      <GalleryImage src={webformatURL} onClick={onSelectedImg} />
       <ImageModal isOpen={selectedImg !== null} onClose={closeModal} image={selectedImg} />
     </>
   )
