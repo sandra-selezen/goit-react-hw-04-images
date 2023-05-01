@@ -1,31 +1,25 @@
 import PropTypes from 'prop-types';
-import { Component } from "react";
+import { useState } from "react";
 import { ImageModal } from "components/Modal/Modal"
 import { GalleryImage } from "./ImageGalleryItem.styled"
 
-export class ImageGalleryItem extends Component {
-  state = {
-    selectedImg: null,
+export const ImageGalleryItem = ({ picture }) => {
+  const [selectedImg, setSelectedImg] = useState(null);
+
+  const onSelectedImg = () => {
+    setSelectedImg(picture.largeImageURL);
   }
 
-  setSelectedImg = () => {
-    this.setState({ selectedImg: this.props.picture.largeImageURL });
+  const closeModal = () => {
+    setSelectedImg(null);
   }
 
-  closeModal = () => {
-    this.setState({ selectedImg: null });
-  }
-
-  render() {
-    const { webformatURL } = this.props.picture;
-    const { selectedImg } = this.state;
-    return (
-      <>
-        <GalleryImage src={webformatURL} onClick={this.setSelectedImg} />
-        <ImageModal isOpen={selectedImg !== null} onClose={this.closeModal} image={selectedImg} />
-      </>
-    )
-  }
+  return (
+    <>
+      <GalleryImage src={picture.webformatURL} onClick={onSelectedImg} />
+      <ImageModal isOpen={selectedImg !== null} onClose={closeModal} image={selectedImg} />
+    </>
+  )
 }
 
 ImageGalleryItem.propTypes = {
