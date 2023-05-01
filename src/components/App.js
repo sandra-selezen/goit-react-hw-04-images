@@ -11,7 +11,7 @@ export const App = () => {
   const [serchQuery, setSearchQuery] = useState("");
   const [pictures, setPictures] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
 
 
