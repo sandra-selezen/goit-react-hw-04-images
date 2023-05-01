@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { useState, useEffect } from "react";
 import { getData } from "services/api";
 import { Container } from "./Layout/Layout.styled";
 import { Toaster, toast } from 'react-hot-toast';
@@ -7,86 +7,57 @@ import { Searchbar } from "./Searchbar/Searchbar";
 import { ImageGallery } from "./ImageGallery/ImageGallery";
 import { Button } from "./Button/Button";
 
-export class App extends Component {
-  state = {
-    serchQuery: "",
-    pictures: [],
-    isLoading: false,
-    error: null,
-    currentPage: 1,
+export const App = () => {
+  const [serchQuery, setSearchQuery] = useState("");
+  const [pictures, setPictures] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+
+
+  const handleFormSubmit = query => {
+    setSearchQuery(query);
+    setCurrentPage(1);
   }
 
-  handleFormSubmit = query => {
-    this.setState(prevState => ({
-      serchQuery: query,
-      currentPage: 1
-    }));
+  const changePage = () => {
+    setCurrentPage(prevPage => prevPage + 1);
   }
 
-  async componentDidUpdate(_, prevState) {
-    const nextQuery = this.state.serchQuery;
-    const prevQuery = prevState.serchQuery;
-    const nextPage = this.state.currentPage;
-    const prevPage = prevState.currentPage;
-
-    if (nextQuery !== prevQuery) {
+  useEffect(() => {
+    if (!serchQuery) {
+      return; // for the first render
+    }
+    
+    const fetchPictures = async () => {
       try {
-        this.setState({ isLoading: true });
-        const fetchedPictures = await getData(nextQuery, this.state.currentPage);
-        this.setState(prevState => ({
-          pictures: fetchedPictures,
-        }))
+        setIsLoading(true);
+        const fetchedPictures = await getData(serchQuery, currentPage);
+        setPictures(prevPictures => [...prevPictures, ...fetchedPictures]);
       } catch (error) {
-        this.setState(prevState => ({
-          error: error.message
-        }));
+        setErrorMessage(error.message);
         return toast('Something went wrong...', { icon: '👻', });
       } finally {
-        this.setState({ isLoading: false });
+        setIsLoading(false);
       }
     }
+    fetchPictures();
+  }, [currentPage, serchQuery])
 
-    if (nextPage !== prevPage && nextQuery === prevQuery) {
-      try {
-        this.setState({ isLoading: true });
-        const fetchedPictures = await getData(nextQuery, nextPage);
-        this.setState(prevState => ({
-          pictures: [...prevState.pictures, ...fetchedPictures],
-        }))
-      } catch (error) {
-        this.setState(prevState => ({
-          error: error.message
-        }));
-        return toast('Something went wrong...', { icon: '👻', });
-      } finally {
-        this.setState({ isLoading: false });
-      }
-    }
-  }
-
-  changePage = () => {
-    this.setState(prevState => ({
-      currentPage: prevState.currentPage + 1
-    }))
-  }
-
-  render() {
-    const { pictures, isLoading } = this.state;
-    return (
-      <Container>
-        <Searchbar onSubmit={this.handleFormSubmit} />
-        <ImageGallery pictures={pictures} />
-        {isLoading && <Circles
-          height="80"
-          width="80"
-          color="#3f51b5"
-          ariaLabel="circles-loading"
-          wrapperClassName="loader"
-          visible={true}
-        />}
-        {pictures.length > 0 && <Button onClick={this.changePage} />}
-        <Toaster position="top-rightr" />
-      </Container>
-    )
-  }
+  return (
+    <Container>
+      <Searchbar onSubmit={handleFormSubmit} />
+      <ImageGallery pictures={pictures} />
+      {isLoading && <Circles
+        height="80"
+        width="80"
+        color="#3f51b5"
+        ariaLabel="circles-loading"
+        wrapperClassName="loader"
+        visible={true}
+      />}
+      {pictures.length > 0 && <Button onClick={changePage} />}
+      <Toaster position="top-rightr" />
+    </Container>
+  )
 }
