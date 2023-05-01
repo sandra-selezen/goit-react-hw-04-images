@@ -1,5 +1,5 @@
 import { Component } from "react";
-import { getData } from "../api";
+import { getData } from "services/api";
 import { Container } from "./Layout/Layout.styled";
 import { Toaster, toast } from 'react-hot-toast';
 import { Circles } from 'react-loader-spinner'

@@ -1,45 +1,41 @@
 import PropTypes from 'prop-types';
-import { Component } from "react";
+import { useState } from "react";
 import { toast } from 'react-hot-toast';
 import { Header, SearchForm, Input, Button } from "./Searchbar.styled";
 import { HiOutlineSearch } from "react-icons/hi";
-export class Searchbar extends Component {
-  state = {
-    query: ""
+
+export const Searchbar = ({ onSubmit }) => {
+  const [query, setQuery] = useState("");
+
+  const handleQueryChange = event => {
+    setQuery(event.currentTarget.value.toLowerCase());
   }
 
-  handleQueryChange = event => {
-    this.setState({ query: event.currentTarget.value.toLowerCase() });
-  }
-
-  handleSubmit = event => {
+  const handleSubmit = event => {
     event.preventDefault();
-    const { query } = this.state;
     if (query.trim() === "") {
       return toast('Please enter search word!', { icon: '🦄', });
     }
-    this.props.onSubmit(query);
-    this.setState({ query: "" });
+    onSubmit(query);
+    setQuery("");
   }
 
-  render() {
-    return (
-      <Header>
-        <SearchForm className="form" onSubmit={this.handleSubmit} autoComplete='off'>
-          <Input
-            onChange={this.handleQueryChange}
-            type="text"
-            name="query"
-            value={this.state.query}
-            placeholder="Search images and photos"
-          />
-          <Button type="submit" className="button">
-            <HiOutlineSearch />
-          </Button>
-        </SearchForm>
-      </Header>
-    )
-  }
+  return (
+    <Header>
+      <SearchForm className="form" onSubmit={handleSubmit} autoComplete='off'>
+        <Input
+          onChange={handleQueryChange}
+          type="text"
+          name="query"
+          value={query}
+          placeholder="Search images and photos"
+        />
+        <Button type="submit" className="button">
+          <HiOutlineSearch />
+        </Button>
+      </SearchForm>
+    </Header>
+  )
 }
 
 Searchbar.propTypes = {
