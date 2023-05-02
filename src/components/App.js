@@ -36,13 +36,14 @@ export const App = () => {
         setPictures(prevPictures => [...prevPictures, ...fetchedPictures]);
       } catch (error) {
         setErrorMessage(error.message);
+        console.log(errorMessage);
         return toast('Something went wrong...', { icon: '👻', });
       } finally {
         setIsLoading(false);
       }
     }
     fetchPictures();
-  }, [currentPage, serchQuery])
+  }, [currentPage, errorMessage, serchQuery]);
 
   return (
     <Container>
